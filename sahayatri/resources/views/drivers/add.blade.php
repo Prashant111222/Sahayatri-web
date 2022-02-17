@@ -8,7 +8,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <form method="post" action="{{ route('driver.store') }}" autocomplete="off" class="form-horizontal">
+                    <form method="post" action="{{ route('driver.store') }}" autocomplete="off" class="form-horizontal"
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="card ">
                             <div class="card-header card-header-primary">
@@ -87,6 +88,20 @@
                                             @if ($errors->has('license_no'))
                                                 <span id="email-error" class="error text-danger"
                                                     for="input-email">{{ $errors->first('license_no') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label">{{ __('License') }}</label>
+                                    <div class="col-sm-7">
+                                        <div class="form-group{{ $errors->has('license') ? ' has-danger' : '' }}">
+                                            <input class="form-control{{ $errors->has('license') ? ' is-invalid' : '' }}"
+                                                name="license" id="license" type="file"
+                                                placeholder="{{ __('Choose File') }}" required />
+                                            @if ($errors->has('license'))
+                                                <span id="email-error" class="error text-danger"
+                                                    for="input-email">{{ $errors->first('license') }}</span>
                                             @endif
                                         </div>
                                     </div>

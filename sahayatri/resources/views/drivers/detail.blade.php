@@ -76,6 +76,11 @@
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <div class="col-md-12">
+                                            <img src="{{ asset('storage/licenses/'.$data->driver->license) }}" alt="{{ $data->name }}'s License">
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-12" style="text-align: right;">
                                             <h6>Registered by: {{ Auth::user()->name }}</h6>
                                         </div>

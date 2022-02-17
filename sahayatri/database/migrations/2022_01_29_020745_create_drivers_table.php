@@ -17,6 +17,7 @@ class CreateDriversTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->unique()->onDelete('cascade');
             $table->string('license_no')->unique();
+            $table->string('license');
             $table->enum('availability', ['on', 'off']);
             $table->enum('status', ['active', 'inactive']);
             $table->timestamps();

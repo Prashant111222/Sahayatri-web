@@ -9,6 +9,8 @@ use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
@@ -59,7 +61,14 @@ class DriverController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'phone_no' => ['required', 'string', 'max:15', 'unique:users', 'regex:/((\+)?977)?(98)[0-9]{8}$/'],
             'license_no' => ['required', 'string', 'max:14', 'min:14', 'unique:drivers', 'regex:/[0-9]{2}-[0-9]{2}-[0-9]{8}$/'],
+            'license' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048'],
         ]);
+
+        $licenseImage = $request->file('license');
+        $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension();
+        $license = $licenseImage->storeAs(
+            'public/licenses', $imageName
+        );
     
         $user = new User;
         $user -> name = $request['name'];
@@ -74,6 +83,7 @@ class DriverController extends Controller
         $driver = new Driver;
         $driver -> user_id = $user -> id;
         $driver -> license_no = $request['license_no'];
+        $driver -> license = $imageName;
         $driver -> availability = 'off';
         $driver -> status = 'inactive';
         $driver -> save();
@@ -125,7 +135,20 @@ class DriverController extends Controller
             'email' => ['required', 'string', 'email', 'max:255',  Rule::unique('users')->ignore($request->user_id)],
             'phone_no' => ['required', 'string', 'max:15', Rule::unique('users')->ignore($request->user_id), 'regex:/((\+)?977)?(98)[0-9]{8}$/'],
             'license_no' => ['required', 'string', 'max:14', 'min:14', Rule::unique('drivers')->ignore($request->driver_id), 'regex:/[0-9]{2}-[0-9]{2}-[0-9]{8}$/'],
+            'license' => ['image', 'mimes:jpg,png,jpeg', 'max:2048'],
         ]);
+
+        if($request->license != null){
+            $licenseImage = $request->file('license');
+            $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension();
+            $license = $licenseImage->storeAs(
+                'public/licenses', $imageName
+            );
+
+            Driver::where('id', $request -> driver_id)->update([
+                'license' => $imageName,
+            ]);
+        }
 
         User::where('id', $request->user_id)->update([
             'name' => $request->name,
