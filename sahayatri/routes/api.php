@@ -12,6 +12,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 //for registering new users
 Route::post('/register', function (Request $request) {
 
@@ -61,5 +65,5 @@ Route::post('/sanctum/token', function (Request $request) {
         ]);
     }
 
-    return $user->createToken($request->device_name)->plainTextToken;
+    return ['token' => $user->createToken($request->device_name)->plainTextToken, 'type' => $user->type];
 });
