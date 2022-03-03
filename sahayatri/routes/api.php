@@ -1,8 +1,11 @@
 <?php
 
 use App\Models\User;
+use App\Events\Test;
 use App\Models\Client;
+use App\Models\Driver;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
@@ -66,4 +69,14 @@ Route::post('/sanctum/token', function (Request $request) {
     }
 
     return ['token' => $user->createToken($request->device_name)->plainTextToken, 'type' => $user->type];
+});
+
+//sending driver details on request if available
+Route::middleware('auth:sanctum')->get('/request/ride', function (Request $request) {
+    $drivers = User::where('type', 'driver')
+    ->with('rating')
+    ->with('driver.vehicle.vehicle_type')
+    ->get()
+    ->where('driver.availability', 'on');
+    return $drivers;
 });

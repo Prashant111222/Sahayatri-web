@@ -1,11 +1,16 @@
 <?php
 
+use App\Events\Test;
 use App\Models\VehicleType;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('auth/login');
+});
+
+Route::get('/broadcast', function () {
+    broadcast(new Test());
 });
 
 Auth::routes();
@@ -19,10 +24,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('notifications', function () {
 		return view('pages.notifications');
 	})->name('notifications');
-
-	Route::get('rtl-support', function () {
-		return view('pages.language');
-	})->name('language');
 
 	Route::get('client/app', function () {
 		return view('application.client');
