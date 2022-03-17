@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\PasswordRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -26,6 +28,12 @@ class ProfileController extends Controller
      */
     public function update(ProfileRequest $request)
     {
+        $request -> validate([
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-z ]+$/i'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore(auth()->user()->id)],
+            'phone_no' => ['required', 'string', 'max:15', Rule::unique('users')->ignore(auth()->user()->id), 'regex:/((\+)?977)?(98)[0-9]{8}$/'],
+        ]);
+
         auth()->user()->update($request->all());
 
         return back()->withStatus(__('Profile successfully updated.'));

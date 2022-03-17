@@ -62,7 +62,22 @@
                                     </div>
                                 
                                 </div>
-                            
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label">{{ __('Phone') }}</label>
+                                    <div class="col-sm-7">
+                                        <div class="form-group{{ $errors->has('phone_no') ? ' has-danger' : '' }}">
+                                            <input class="form-control{{ $errors->has('phone_no') ? ' is-invalid' : '' }}"
+                                                name="phone_no" id="input-email" type="phone_no"
+                                                placeholder="{{ __('+977') }}"
+                                                value="{{ old('phone_no', auth()->user()->phone_no) }}" required />
+                                            @if ($errors->has('phone_no'))
+                                                <span id="email-error" class="error text-danger"
+                                                    for="input-email">{{ $errors->first('phone_no') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                
+                                </div>
                             </div>
                             <div class="card-footer ml-auto mr-auto">
                                 <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
