@@ -60,7 +60,9 @@
                                             @endif
                                         </div>
                                     </div>
+                                
                                 </div>
+                            
                             </div>
                             <div class="card-footer ml-auto mr-auto">
                                 <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>

@@ -3,6 +3,7 @@
 use App\Events\Test;
 use App\Models\VehicleType;
 use App\Models\Vehicle;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,7 +11,7 @@ Route::get('/', function () {
 });
 
 Route::get('/broadcast', function () {
-    broadcast(new Test());
+    broadcast(new Test(User::find(3)));
 });
 
 Auth::routes();

@@ -14,14 +14,28 @@ class RideRequest implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $driver_id;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($driver_id)
     {
         //
+        $this->driver_id = $driver_id;
+    }
+
+    public function broadcastWith()
+    {
+        return[
+            'Your Request has been confirmed'
+        ];
+    }
+
+    public function broadcastAs()
+    {
+        return 'test-test';
     }
 
     /**
@@ -31,6 +45,6 @@ class RideRequest implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('ride');
+        return new PrivateChannel('test.'.$this->driver_id->id);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use App\Models\Driver;
 use App\Models\User;
+use App\Models\Rating;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -70,6 +71,7 @@ class DriverController extends Controller
             'public/licenses', $imageName
         );
     
+        //filling user information
         $user = new User;
         $user -> name = $request['name'];
         $user -> email = $request['email'];
@@ -78,8 +80,10 @@ class DriverController extends Controller
         $user -> type = 'driver';
         $user -> save();
 
+        //sending E-mail for resetting the password
         Password::sendResetLink($request->only(['email']));
 
+        //filling driver infrmation
         $driver = new Driver;
         $driver -> user_id = $user -> id;
         $driver -> license_no = $request['license_no'];
@@ -88,7 +92,11 @@ class DriverController extends Controller
         $driver -> status = 'inactive';
         $driver -> save();
 
-        $vehicle_types = VehicleType::all();
+        //filling rating information i.e. 0 initially
+        $rating = new Rating;
+        $rating -> user_id = $user -> id;
+        $rating -> rating = 0;
+        $rating -> save();
 
         return redirect()->route('add.vehicle', $driver->id)->withStatus(__('Driver Successfully Added.'));
     }

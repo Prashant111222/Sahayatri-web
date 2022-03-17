@@ -25,10 +25,10 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
-        @include('layouts.page_templates.auth')
+        @include('layouts.main.auth')
     @endauth
     @guest()
-        @include('layouts.page_templates.guest')
+        @include('layouts.main.guest')
     @endguest
 
     <!--   Core JS Files   -->

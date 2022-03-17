@@ -13,20 +13,23 @@ use Illuminate\Queue\SerializesModels;
 class Test implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $user;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user)
     {
         //
+        $this->user = $user;
     }
 
     public function broadcastWith()
     {
         return[
-            'test' => 'For Testing'
+            'Your Request has been confirmed'
         ];
     }
 
@@ -42,6 +45,6 @@ class Test implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('test');
+        return new PrivateChannel('test.'.$this->user->id);
     }
 }
