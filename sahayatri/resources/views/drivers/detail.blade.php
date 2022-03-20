@@ -49,7 +49,9 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <a class="nav-link" href="#">
-                                                <h5><i class="material-icons">star_</i>4.8</h5>
+                                                <h5><i
+                                                        class="material-icons">star_</i>{{ $data->rating_avg_rating == 0 ? 'N/A' : $data->rating_avg_rating }}
+                                                </h5>
                                             </a>
                                         </div>
                                     </div>
@@ -70,14 +72,16 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <a class="nav-link" href="#">
-                                                <h5><i class="material-icons">badge_</i>License No -  {{ $data->driver->license_no }}
+                                                <h5><i class="material-icons">badge_</i>License No -
+                                                    {{ $data->driver->license_no }}
                                                 </h5>
                                             </a>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <img src="{{ asset('storage/licenses/'.$data->driver->license) }}" alt="{{ $data->name }}'s License">
+                                            <img src="{{ asset('storage/licenses/' . $data->driver->license) }}"
+                                                alt="{{ $data->name }}'s License">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -90,8 +94,8 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <a class="nav-link" href="#">
-                                                <h5><i
-                                                        class="material-icons">confirmation_number_</i>Vehicle No -  {{ $data->driver->vehicle->vehicle_no }}
+                                                <h5><i class="material-icons">confirmation_number_</i>Vehicle No -
+                                                    {{ $data->driver->vehicle->vehicle_no }}
                                                 </h5>
                                             </a>
                                         </div>
@@ -99,8 +103,8 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <a class="nav-link" href="#">
-                                                <h5><i
-                                                        class="material-icons">category_</i>Vehicle Type -  {{ $data->driver->vehicle->vehicle_type->vehicle_type }}
+                                                <h5><i class="material-icons">category_</i>Vehicle Type -
+                                                    {{ $data->driver->vehicle->vehicle_type->vehicle_type }}
                                                     @if ($data->driver->vehicle->vehicle_type->vehicle_type == 'cab')
                                                         <i class="material-icons">drive_eta</i>
                                                     @elseif ($data->driver->vehicle->vehicle_type->vehicle_type == 'bike')

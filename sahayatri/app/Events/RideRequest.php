@@ -2,6 +2,8 @@
 
 namespace App\Events;
 
+use App\Models\User;
+use App\Models\Ride;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -15,27 +17,37 @@ class RideRequest implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $driver_id;
+    public $data;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($driver_id)
+    public function __construct($data)
     {
-        //
-        $this->driver_id = $driver_id;
+        // 
+        $this->driver_id = $data['driver_id'];
+        $this->data = $data;
     }
 
     public function broadcastWith()
     {
-        return[
-            'Your Request has been confirmed'
-        ];
+        $details = User::where('id', $this->data['client_id'])
+        ->withAvg('rating', 'rating')
+        ->first()
+        ->toArray();
+
+        $rideInfo = Ride::where('id', $this->data['ride_id'])
+        ->with('location')
+        ->first()
+        ->toArray();
+
+        return ['user' => $details, 'ride' => $rideInfo];
     }
 
     public function broadcastAs()
     {
-        return 'test-test';
+        return 'ride-request';
     }
 
     /**
@@ -45,6 +57,6 @@ class RideRequest implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('test.'.$this->driver_id->id);
+        return new PrivateChannel('driver.'.$this->driver_id);
     }
 }

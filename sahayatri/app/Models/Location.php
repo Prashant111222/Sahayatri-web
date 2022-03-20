@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class Location extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'client_id',
         'ride_id',
-        'payment_method',
-        'amount',
+        'initial_lat',
+        'initial_lng',
+        'destination_lat',
+        'destination_lng',
+        'origin',
+        'destination',
+        'total_distance',
     ];
 }

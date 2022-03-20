@@ -17,10 +17,6 @@ class CreateRidesTable extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('driver_id')->constrained()->onDelete('cascade');
-            $table->string('initial_lat');
-            $table->string('initial_lng');
-            $table->string('destination_lat');
-            $table->string('destination_lng');
             $table->enum('ride_type', ['parcel', 'intercity']);
             $table->string('scheduled_date')->nullable();
             $table->string('scheduled_time')->nullable();

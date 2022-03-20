@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentsTable extends Migration
+class CreateLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,16 @@ class CreatePaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('ride_id')->constrained()->onDelete('cascade');
-            $table->enum('payment_method', ['online', 'cash']);
-            $table->string('amount');
+            $table->string('initial_lat');
+            $table->string('initial_lng');
+            $table->string('destination_lat');
+            $table->string('destination_lng');
+            $table->string('origin');
+            $table->string('destination');
+            $table->string('total_distance');
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ class CreatePaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('locations');
     }
 }

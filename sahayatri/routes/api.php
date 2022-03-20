@@ -5,6 +5,10 @@ use App\Models\Rating;
 use App\Events\Test;
 use App\Models\Client;
 use App\Models\Driver;
+use App\Models\Payment;
+use App\Models\Ride;
+use App\Models\Location;
+use App\Events\RideRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 
 //for returning the data related to user
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return User::where('id', $request->user()->id)->withAvg('rating', 'rating')->first();
 });
 
 //for registering new users
@@ -115,7 +119,42 @@ Route::middleware('auth:sanctum')->get('/rate/user', function (Request $request)
 });
 
 Route::middleware('auth:sanctum')->post('/request/driver', function (Request $request) {
-    $request->driver_id;
-    $request->client_id;
-    return ['client' => User::find($request->driver_id)];
+    //storing ride details
+    $ride = new Ride;
+    $ride -> client_id = Client::where('user_id', $request -> client_id)->first()['id'];
+    $ride -> driver_id = Driver::where('user_id', $request -> driver_id)->first()['id'];
+    $ride -> ride_type = $request -> ride_type;
+    $ride -> scheduled_date = $request -> scheduled_date;
+    $ride -> scheduled_time = $request -> scheduled_time;
+    $ride -> total_fare = $request -> total_fare;
+    $ride -> status = 'pending';
+    $ride -> save();
+
+    //storing location details
+    $location = new Location;
+    $location -> ride_id = $ride -> id;
+    $location -> initial_lat = $request -> initial_lat;
+    $location -> initial_lng = $request -> initial_lng;
+    $location -> destination_lat = $request -> destination_lat;
+    $location -> destination_lng = $request -> destination_lng;
+    $location -> origin = $request -> origin;
+    $location -> destination = $request -> destination;
+    $location -> total_distance = $request -> total_distance;
+    $location -> save();
+    
+    $details = ['driver_id' => $request->driver_id, 'client_id' => $request->client_id, 'ride_id' => $ride->id];
+    // broadcast(new RideRequest($details));
+
+    $details = User::where('id', $request->client_id)
+        ->withAvg('rating', 'rating')
+        ->first()
+        ->toArray();
+
+        $rideInfo = Ride::where('id', $ride->id)
+        ->with('location')
+        ->first()
+        ->toArray();
+
+        return ['user' => $details, 'ride' => $rideInfo];
+    return 'success';
 });

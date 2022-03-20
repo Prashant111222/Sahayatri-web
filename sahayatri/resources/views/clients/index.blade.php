@@ -41,6 +41,9 @@
                                                 <th>
                                                     Phone
                                                 </th>
+                                                <th>
+                                                    Rating
+                                                </th>
                                                 <th class="text-right">
                                                     Actions
                                                 </th>
@@ -57,6 +60,9 @@
                                                     </td>
                                                     <td>
                                                         {{ $data->phone_no }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $data->rating_avg_rating == 0 ? 'N/A' : $data->rating_avg_rating }}
                                                     </td>
                                                     <td class="td-actions text-right">
                                                         <a href="{{ route('delete.client', $data->id) }}">

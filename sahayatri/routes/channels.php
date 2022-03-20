@@ -21,3 +21,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('test.{userId}', function ($user, $userId) {
     return $user->id === User::find($userId)->id;
 });
+
+Broadcast::channel('driver.{userId}', function ($user, $userId) {
+    return $user->id === User::find($userId)->id;
+});

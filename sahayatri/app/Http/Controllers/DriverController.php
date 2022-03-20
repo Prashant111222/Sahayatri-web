@@ -26,6 +26,7 @@ class DriverController extends Controller
     {
         //
         $drivers = User::where('type', 'driver')
+        ->withAvg('rating', 'rating')
         ->with('driver')
         ->get();
 
