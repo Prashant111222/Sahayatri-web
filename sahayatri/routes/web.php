@@ -1,7 +1,7 @@
 <?php
 
 use App\Events\Test;
-use App\Events\RideRequest;
+use App\Events\ConfirmRequest;
 use App\Models\VehicleType;
 use App\Models\Vehicle;
 use App\Models\User;
@@ -12,9 +12,10 @@ Route::get('/', function () {
 });
 
 Route::get('/broadcast', function () {
-	//  $request = ["initial_lat" => 26.7061702, "driver_id" => 4,"client_id" => 3];
-	// broadcast(new RideRequest($request));
-    broadcast(new Test(User::find(3)));
+	$name = 'Raam';
+	$client_id = 3;
+	$details = ['name' => $name, 'id' => $client_id];
+    broadcast(new ConfirmRequest($details));
 });
 
 Auth::routes();

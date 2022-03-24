@@ -2,13 +2,16 @@
 
 use App\Models\User;
 use App\Models\Rating;
-use App\Events\Test;
 use App\Models\Client;
 use App\Models\Driver;
 use App\Models\Payment;
 use App\Models\Ride;
 use App\Models\Location;
 use App\Events\RideRequest;
+use App\Events\CancelRequest;
+use App\Events\CancelTrip;
+use App\Events\ConfirmRequest;
+use App\Events\RideCompleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +19,9 @@ use Illuminate\Validation\ValidationException;
 
 //for returning the data related to user
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return User::where('id', $request->user()->id)->withAvg('rating', 'rating')->first();
+    return User::where('id', $request->user()->id)
+    ->withAvg('rating', 'rating')
+    ->first();
 });
 
 //for registering new users
@@ -30,24 +35,24 @@ Route::post('/register', function (Request $request) {
 
     //storing user details
     $user = new User;
-    $user -> name = $request['name'];
-    $user -> email = $request['email'];
-    $user -> phone_no = $request['phone_no'];
-    $user -> password = Hash::make($request['password']);
-    $user -> type = 'client';
-    $user -> save();
+    $user->name = $request['name'];
+    $user->email = $request['email'];
+    $user->phone_no = $request['phone_no'];
+    $user->password = Hash::make($request['password']);
+    $user->type = 'client';
+    $user->save();
 
     //storing specific client details
     $client = new Client;
-    $client -> user_id = $user -> id;
-    $client -> status = 'active';
-    $client -> save();
+    $client->user_id = $user->id;
+    $client->status = 'active';
+    $client->save();
     
-    //storing initial rating i.e. 0
+    //storing initial rating i.e. 5
     $rating = new Rating;
-    $rating -> user_id = $user -> id;
-    $rating -> rating = 0;
-    $rating -> save();
+    $rating->user_id = $user->id;
+    $rating->rating = 5;
+    $rating->save();
     
     return 'success';
 });
@@ -95,7 +100,8 @@ Route::middleware('auth:sanctum')->get('/request/ride', function (Request $reque
 Route::middleware('auth:sanctum')->get('/offline', function (Request $request) {
     $user = $request->user();
 
-    Driver::where('user_id', $user -> id)->update(['availability' => 'off']);
+    Driver::where('user_id', $user->id)
+    ->update(['availability' => 'off']);
 
     return 'success';
 });
@@ -104,57 +110,107 @@ Route::middleware('auth:sanctum')->get('/offline', function (Request $request) {
 Route::middleware('auth:sanctum')->get('/online', function (Request $request) {
     $user = $request->user();
 
-    Driver::where('user_id', $user -> id)->update(['availability' => 'on']);
+    Driver::where('user_id', $user->id)
+    ->update(['availability' => 'on']);
 
     return 'success';
 });
 
 //rating for users
-Route::middleware('auth:sanctum')->get('/rate/user', function (Request $request) {
+Route::middleware('auth:sanctum')->post('/rate/user', function (Request $request) {
     $rating = new Rating;
-    $rating -> user_id = $request -> user_id;
-    $rating -> rating = $request -> rate;
-    $rating -> save();
+    $rating->user_id = $request->user_id;
+    $rating->rating = $request->rate;
+    $rating->save();
     return 'success';
 });
 
+//storing the ride information
 Route::middleware('auth:sanctum')->post('/request/driver', function (Request $request) {
     //storing ride details
     $ride = new Ride;
-    $ride -> client_id = Client::where('user_id', $request -> client_id)->first()['id'];
-    $ride -> driver_id = Driver::where('user_id', $request -> driver_id)->first()['id'];
-    $ride -> ride_type = $request -> ride_type;
-    $ride -> scheduled_date = $request -> scheduled_date;
-    $ride -> scheduled_time = $request -> scheduled_time;
-    $ride -> total_fare = $request -> total_fare;
-    $ride -> status = 'pending';
-    $ride -> save();
+    $ride->client_id = Client::where('user_id', $request->client_id)->first()['id']; //getting the client ID from the user ID
+    $ride->driver_id = Driver::where('user_id', $request->driver_id)->first()['id'];
+    $ride->ride_type = $request->ride_type;
+    $ride->scheduled_date = $request->scheduled_date;
+    $ride->scheduled_time = $request->scheduled_time;
+    $ride->total_fare = $request->total_fare;
+    $ride->status = 'cancelled';
+    $ride->save();
 
     //storing location details
     $location = new Location;
-    $location -> ride_id = $ride -> id;
-    $location -> initial_lat = $request -> initial_lat;
-    $location -> initial_lng = $request -> initial_lng;
-    $location -> destination_lat = $request -> destination_lat;
-    $location -> destination_lng = $request -> destination_lng;
-    $location -> origin = $request -> origin;
-    $location -> destination = $request -> destination;
-    $location -> total_distance = $request -> total_distance;
-    $location -> save();
+    $location->ride_id = $ride->id;
+    $location->initial_lat = $request->initial_lat;
+    $location->initial_lng = $request->initial_lng;
+    $location->destination_lat = $request->destination_lat;
+    $location->destination_lng = $request->destination_lng;
+    $location->origin = $request->origin;
+    $location->destination = $request->destination;
+    $location->total_distance = $request->total_distance;
+    $location->save();
     
     $details = ['driver_id' => $request->driver_id, 'client_id' => $request->client_id, 'ride_id' => $ride->id];
-    // broadcast(new RideRequest($details));
 
-    $details = User::where('id', $request->client_id)
-        ->withAvg('rating', 'rating')
-        ->first()
-        ->toArray();
+    //broadcasting the request to the driver
+    broadcast(new RideRequest($details));
 
-        $rideInfo = Ride::where('id', $ride->id)
-        ->with('location')
-        ->first()
-        ->toArray();
-
-        return ['user' => $details, 'ride' => $rideInfo];
     return 'success';
+});
+
+//receiving the response from the driver
+Route::middleware('auth:sanctum')->post('/driver/response', function (Request $request) {
+    //accessing user name from the id
+    $name = User::select('name')->where('id', $request->driver_id)->first();
+    //storing name and id in the compact array
+    $details = ['name' => $name, 'id' => $request->client_id];
+
+    if($request->response == 'accepted'){
+        //updating the status
+        Ride::where('id', $request->ride_id)->update(['status' => 'pending']);
+        //broadcasting to the client
+        broadcast(new ConfirmRequest($details));
+    }
+    else if($request->response == 'rejected') {
+        //deleting the details
+        Ride::where('id', $request->ride_id)->delete();
+        //broadcasting to the client
+        broadcast(new CancelRequest($details));
+    }
+    return 'success';
+});
+
+//cancelling the trip by client
+Route::middleware('auth:sanctum')->post('/cancel/trip', function (Request $request) {
+    $name = User::select('name')->where('id', $request->driver_id)->first();
+    $details = ['name' => $name, 'id' => $request->client_id];
+
+    Ride::where('id', $request->ride_id)->update(['status' => 'cancelled']);
+    broadcast(new CancelTrip($details));
+    return 'success';
+});
+
+//on completion of the ride
+Route::middleware('auth:sanctum')->post('/ride/completed', function (Request $request) {
+    $details = ['client_id' => $request->client_id, 'driver_id' => $request->driver_id];
+
+    //when the ride is completed
+    Ride::where('id', $request->ride_id)->update(['status' => 'completed']);
+    broadcast(new RideCompleted($details));
+    return 'success';
+});
+
+//getting all the pending result
+Route::middleware('auth:sanctum')->get('/pending/requests', function (Request $request) {
+    //getting the driver id
+    $driver_id = Driver::where('user_id', $request->user()->id)->first()['id'];
+
+    //getting all the pending requests of a driver
+    $ride = Ride::where('driver_id', $driver_id)
+    ->where('status', 'pending')
+    ->with('client.user')
+    ->with('location')
+    ->get();
+
+    return $ride;
 });

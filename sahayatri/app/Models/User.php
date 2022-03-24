@@ -47,6 +47,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    //creating attributes to be returned
+    protected $appends = [
+        'avg_rating'
+    ];
+
     public function driver()
     {
         return $this->hasOne(Driver::class);
@@ -60,5 +65,10 @@ class User extends Authenticatable
     public function rating()
     {
         return $this->hasMany(Rating::class);
+    }
+
+    //returning the average rating from rating volum of the rating model
+    function getAvgRatingAttribute(){
+        return $this->rating()->avg('rating', 'rating');
     }
 }

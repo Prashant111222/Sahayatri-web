@@ -96,7 +96,7 @@ class DriverController extends Controller
         //filling rating information i.e. 0 initially
         $rating = new Rating;
         $rating -> user_id = $user -> id;
-        $rating -> rating = 0;
+        $rating -> rating = 5;
         $rating -> save();
 
         return redirect()->route('add.vehicle', $driver->id)->withStatus(__('Driver Successfully Added.'));
