@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\Test;
 use App\Events\ConfirmRequest;
 use App\Models\VehicleType;
 use App\Models\Vehicle;
@@ -9,13 +8,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('auth/login');
-});
-
-Route::get('/broadcast', function () {
-	$name = 'Raam';
-	$client_id = 3;
-	$details = ['name' => $name, 'id' => $client_id];
-    broadcast(new ConfirmRequest($details));
 });
 
 Auth::routes();
@@ -76,6 +68,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('vehicle/type/store', ['as' => 'vehicleType.store', 'uses' => 'App\Http\Controllers\VehicleTypeController@store']);
 	Route::get('vehicle/type/edit/{id}', ['as' => 'vehicleType.edit', 'uses' => 'App\Http\Controllers\VehicleTypeController@edit']);
 	Route::post('vehicle/type/update/{id}', ['as' => 'vehicleType.update', 'uses' => 'App\Http\Controllers\VehicleTypeController@update']);
+
+	Route::get('rides/index', ['as' => 'rides.index', 'uses' => 'App\Http\Controllers\RideController@index']);
 });
 
 

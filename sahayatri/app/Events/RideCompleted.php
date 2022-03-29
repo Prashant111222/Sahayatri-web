@@ -15,6 +15,7 @@ class RideCompleted implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $clientId;
+    public $name;
     public $driverId;
     /**
      * Create a new event instance.
@@ -25,13 +26,14 @@ class RideCompleted implements ShouldBroadcast
     {
         //
         $this->clientId = $details['client_id'];
+        $this->name = $details['name']['name'];
         $this->driverId = $details['driver_id'];
     }
 
     public function broadcastWith()
     {
         return [
-            $driverId
+            $this->name, strval($this->driverId)
         ];
     }
 

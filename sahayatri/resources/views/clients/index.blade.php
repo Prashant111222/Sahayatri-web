@@ -42,7 +42,7 @@
                                                     Phone
                                                 </th>
                                                 <th>
-                                                    Rating
+                                                    <i class="material-icons">star</i> Rating
                                                 </th>
                                                 <th class="text-right">
                                                     Actions
@@ -62,13 +62,13 @@
                                                         {{ $data->phone_no }}
                                                     </td>
                                                     <td>
-                                                        {{ $data->rating_avg_rating == 0 ? 'N/A' : $data->rating_avg_rating }}
+                                                        {{ $data->rating_avg_rating == 0 ? 'N/A' : round($data->rating_avg_rating, 1) }}
                                                     </td>
                                                     <td class="td-actions text-right">
                                                         <a href="{{ route('delete.client', $data->id) }}">
                                                             <button type="button" rel="tooltip" title="Remove User"
                                                                 class="btn btn-danger btn-link btn-sm">
-                                                                <i class="material-icons">close</i>
+                                                                <i class="material-icons">delete</i>
                                                             </button>
                                                         </a>
                                                     </td>

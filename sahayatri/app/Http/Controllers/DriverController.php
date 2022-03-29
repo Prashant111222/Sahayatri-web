@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use App\Models\Driver;
 use App\Models\User;
+use App\Models\Ride;
 use App\Models\Rating;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
@@ -45,9 +46,17 @@ class DriverController extends Controller
         ->with('driver.vehicle.vehicle_type')
         ->first();
 
-        // return $drivers;
+        //getting the ride information of specific drivers
+        $driver_id = Driver::where('user_id', $id)->first()['id'];
 
-        return view('drivers.detail', ['data' => $drivers]);
+        //getting all the pending requests of a driver
+        $ride = Ride::where('driver_id', $driver_id)
+        ->with('client.user')
+        ->with('location')
+        ->orderByDesc('updated_at')
+        ->get();
+
+        return view('drivers.detail', ['data' => $drivers, 'ride' => $ride]);
     }
 
     /**
@@ -147,6 +156,7 @@ class DriverController extends Controller
             'license' => ['image', 'mimes:jpg,png,jpeg', 'max:2048'],
         ]);
 
+        //storing the license photo if uploaded by the client
         if($request->license != null){
             $licenseImage = $request->file('license');
             $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension();

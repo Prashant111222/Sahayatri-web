@@ -94,7 +94,7 @@
                                                         <a href="{{ route('delete.driver', $data->id) }}">
                                                             <button type="button" rel="tooltip" title="Remove Driver"
                                                                 class="btn btn-danger btn-link btn-sm">
-                                                                <i class="material-icons">close</i>
+                                                                <i class="material-icons">delete</i>
                                                             </button>
                                                         </a>
                                                     </td>

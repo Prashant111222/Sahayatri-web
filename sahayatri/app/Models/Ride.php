@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Models\Payment;
 use App\Models\Location;
 use App\Models\Client;
+use App\Models\Driver;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,5 +36,10 @@ class Ride extends Model
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
     }
 }

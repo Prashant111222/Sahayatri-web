@@ -74,7 +74,7 @@
                 </a>
             </li>
             <li class="nav-item{{ $activePage == 'rides' ? ' active' : '' }}">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ route('rides.index') }}">
                     <i class="material-icons">taxi_alert</i>
                     <p>{{ __('Rides') }}</p>
                 </a>
@@ -98,12 +98,6 @@
                     <p>{{ __('Log Out') }}</p>
                 </a>
             </li>
-            {{-- <li class="nav-item{{ $activePage == 'user-mgmt' ? ' active' : '' }}">
-                <a class="nav-link" href="{{ route('user.index') }}">
-                    <span class="sidebar-mini"> UM </span>
-                    <span class="sidebar-normal"> {{ __('User Management') }} </span>
-                </a>
-            </li> --}}
         </ul>
     </div>
 </div>

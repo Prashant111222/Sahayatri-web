@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ride;
+use App\Models\Location;
 use Illuminate\Http\Request;
 
 class RideController extends Controller
@@ -14,7 +15,13 @@ class RideController extends Controller
      */
     public function index()
     {
-        //
+        //getting the latest ride informations using eloquent query
+        $rides = Ride::with('location')
+        ->with('client.user')
+        ->with('driver.user')
+        ->orderByDesc('updated_at')
+        ->get();
+        return view('rides.index', ['data' => $rides]);
     }
 
     /**

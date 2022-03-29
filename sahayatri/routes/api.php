@@ -11,6 +11,7 @@ use App\Events\RideRequest;
 use App\Events\CancelRequest;
 use App\Events\CancelTrip;
 use App\Events\ConfirmRequest;
+use App\Events\NotifyClient;
 use App\Events\RideCompleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -182,8 +183,8 @@ Route::middleware('auth:sanctum')->post('/driver/response', function (Request $r
 
 //cancelling the trip by client
 Route::middleware('auth:sanctum')->post('/cancel/trip', function (Request $request) {
-    $name = User::select('name')->where('id', $request->driver_id)->first();
-    $details = ['name' => $name, 'id' => $request->client_id];
+    $name = User::select('name')->where('id', $request->client_id)->first();
+    $details = ['name' => $name, 'id' => $request->driver_id];
 
     Ride::where('id', $request->ride_id)->update(['status' => 'cancelled']);
     broadcast(new CancelTrip($details));
@@ -192,15 +193,20 @@ Route::middleware('auth:sanctum')->post('/cancel/trip', function (Request $reque
 
 //on completion of the ride
 Route::middleware('auth:sanctum')->post('/ride/completed', function (Request $request) {
-    $details = ['client_id' => $request->client_id, 'driver_id' => $request->driver_id];
+    //getting the name of the driver
+    $name = User::select('name')->where('id', $request->driver_id)->first();
+
+    $details = ['client_id' => $request->client_id, 'name' => $name, 'driver_id' => $request->driver_id];
 
     //when the ride is completed
     Ride::where('id', $request->ride_id)->update(['status' => 'completed']);
+
+    //broadcasting to the client
     broadcast(new RideCompleted($details));
     return 'success';
 });
 
-//getting all the pending result
+//getting all the pending trips for driver
 Route::middleware('auth:sanctum')->get('/pending/requests', function (Request $request) {
     //getting the driver id
     $driver_id = Driver::where('user_id', $request->user()->id)->first()['id'];
@@ -213,4 +219,55 @@ Route::middleware('auth:sanctum')->get('/pending/requests', function (Request $r
     ->get();
 
     return $ride;
+});
+
+//getting all the upcoming trips for client
+Route::middleware('auth:sanctum')->get('/upcoming/trips', function (Request $request) {
+    //getting the client id
+    $client_id = Client::where('user_id', $request->user()->id)->first()['id'];
+
+    //getting all the upcoming trips of a client
+    $trips = Ride::where('client_id', $client_id)
+    ->where('status', 'pending')
+    ->with('driver.user')
+    ->with('location')
+    ->get();
+
+    return $trips;
+});
+
+//getting all the completed trips of client
+Route::middleware('auth:sanctum')->get('/client/history', function (Request $request) {
+    //getting the client id
+    $client_id = Client::where('user_id', $request->user()->id)->first()['id'];
+
+    //getting all the upcoming trips of a client
+    $trips = Ride::where('client_id', $client_id)
+    ->where('status', 'completed')
+    ->with('location')
+    ->get();
+
+    return $trips;
+});
+
+//getting all the completed trips of driver
+Route::middleware('auth:sanctum')->get('/driver/history', function (Request $request) {
+    //getting the driver id
+    $driver_id = Driver::where('user_id', $request->user()->id)->first()['id'];
+
+    //getting all the upcoming trips of a client
+    $trips = Ride::where('driver_id', $driver_id)
+    ->where('status', 'completed')
+    ->with('location')
+    ->get();
+
+    return $trips;
+});
+
+//For notifying the client before starting the trip
+Route::middleware('auth:sanctum')->post('/notify/client', function (Request $request) {
+    //broadcasting to the client channel
+    broadcast(new NotifyClient($request->client_id));
+
+    return 'success';
 });

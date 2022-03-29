@@ -50,7 +50,7 @@
                                         <div class="col-md-12">
                                             <a class="nav-link" href="#">
                                                 <h5><i
-                                                        class="material-icons">star_</i>{{ $data->rating_avg_rating == 0 ? 'N/A' : $data->rating_avg_rating }}
+                                                        class="material-icons">star_</i>{{ $data->avg_rating == 0 ? 'N/A' : $data->avg_rating }}
                                                 </h5>
                                             </a>
                                         </div>
@@ -80,6 +80,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
+                                            {{-- displaing the license of driver --}}
                                             <img src="{{ asset('storage/licenses/' . $data->driver->license) }}"
                                                 alt="{{ $data->name }}'s License">
                                         </div>
@@ -122,7 +123,91 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="tab-pane" id="ride">
+                                    <div class="table-responsive">
+                                        <div class="col-md-12">
+                                            <table class="table" id="dataTable">
+                                                <thead class=" text-primary">
+                                                    <tr>
+                                                        <th>
+                                                            Client
+                                                        </th>
+                                                        <th>
+                                                            Origin
+                                                        </th>
+                                                        <th>
+                                                            Destination
+                                                        </th>
+                                                        <th>
+                                                            Total Distance
+                                                        </th>
+                                                        <th>
+                                                            Total Price
+                                                        </th>
+                                                        <th>
+                                                            Type
+                                                        </th>
+                                                        <th>
+                                                            Status
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($ride as $data)
+                                                        <tr>
+                                                            <td>
+                                                                {{ $data->client->user->name }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $data->location->origin }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $data->location->destination }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $data->location->total_distance }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $data->total_fare }}
+                                                            </td>
+                                                            <td>
+                                                                @if ($data->ride_type == 'intercity')
+                                                                    <button type="button" rel="tooltip" title="Intercity"
+                                                                        class="btn btn-primary btn-link btn-sm">
+                                                                        <i class="material-icons">local_taxi</i>
+                                                                    </button>
+                                                                @else
+                                                                    <button type="button" rel="tooltip" title="Parcel"
+                                                                        class="btn btn-primary btn-link btn-sm">
+                                                                        <i class="material-icons">local_shipping</i>
+                                                                    </button>
+                                                                @endif
+                                                            </td>
+                                                            <td class="td-actions">
+                                                                @if ($data->status == 'completed')
+                                                                    <div class="btn btn-sm btn-success" rel="tooltip"
+                                                                        title="Completed Ride">
+                                                                        Completed
+                                                                    </div>
+                                                                @elseif ($data->status == 'pending')
+                                                                    <div class="btn btn-sm btn-info" rel="tooltip"
+                                                                        title="Pending Ride">
+                                                                        Pending
+                                                                    </div>
+                                                                @else
+                                                                    <div class="btn btn-sm btn-danger" rel="tooltip"
+                                                                        title="Cancelled Ride">
+                                                                        Cancelled
+                                                                    </div>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
