@@ -16,6 +16,7 @@ use App\Events\RideCompleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 
 //for returning the data related to user
@@ -268,6 +269,14 @@ Route::middleware('auth:sanctum')->get('/driver/history', function (Request $req
 Route::middleware('auth:sanctum')->post('/notify/client', function (Request $request) {
     //broadcasting to the client channel
     broadcast(new NotifyClient($request->client_id));
+
+    return 'success';
+});
+
+//for resetting the password
+Route::post('/forgot/password', function (Request $request) {
+    //sending password reset link to user email
+    Password::sendResetLink($request->only(['email']));
 
     return 'success';
 });
