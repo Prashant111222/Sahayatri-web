@@ -89,7 +89,7 @@
                         </div>
                         <div class="card-footer">
                             <div class="stats">
-                                <i class="material-icons">access_time</i> updates from last 7 days
+                                <i class="material-icons">access_time</i> weekly updates
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                         </div>
                         <div class="card-footer">
                             <div class="stats">
-                                <i class="material-icons">access_time</i> updated 4 minutes ago
+                                <i class="material-icons">access_time</i> updated for the latest week
                             </div>
                         </div>
 

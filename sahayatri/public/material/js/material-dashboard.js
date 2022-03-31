@@ -167,38 +167,6 @@ md = {
     });
   },
 
-  initDocumentationCharts: function () {
-    if ($('#clientSubscriptionsChart').length != 0 && $('#dailyRevenueChart').length != 0) {
-      /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-      dataclientSubscriptionsChart = {
-        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-        series: [
-          [12, 17, 7, 17, 23, 18, 38]
-        ]
-      };
-
-      optionsclientSubscriptionsChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        },
-      }
-
-      var clientSubscriptionsChart = new Chartist.Line('#clientSubscriptionsChart', dataclientSubscriptionsChart, optionsclientSubscriptionsChart);
-
-      var animationHeaderChart = new Chartist.Line('#dailyRevenueChart', dataclientSubscriptionsChart, optionsclientSubscriptionsChart);
-    }
-  },
-
-
   initFormExtendedDatetimepickers: function () {
     $('.datetimepicker').datetimepicker({
       icons: {
@@ -249,7 +217,6 @@ md = {
 
 
   initSliders: function () {
-    // Sliders for demo purpose
     var slider = document.getElementById('sliderRegular');
 
     noUiSlider.create(slider, {
@@ -299,7 +266,7 @@ md = {
       dataclientSubscriptionsChart = {
         labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
         series: [
-          [12, 17, 50, 17, 23, 18, 38]
+          [10, 20, 50, 5, 15, 10, 30]
         ]
       };
 
@@ -308,7 +275,7 @@ md = {
           tension: 0
         }),
         low: 0,
-        high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+        high: 50,
         chartPadding: {
           top: 0,
           right: 0,
