@@ -18,10 +18,6 @@ Route::group(['middleware' => 'auth'], function(){
 });
 
 Route::group(['middleware' => 'auth'], function () {
-	Route::get('notifications', function () {
-		return view('pages.notifications');
-	})->name('notifications');
-
 	Route::get('client/app', function () {
 		return view('application.client');
 	})->name('client.app');
