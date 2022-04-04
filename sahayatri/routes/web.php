@@ -12,12 +12,12 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['middleware' => 'auth'], function(){
+Route::group(['middleware' => 'admin'], function(){
 	Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 	Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
 });
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'admin'], function () {
 	Route::get('client/app', function () {
 		return view('application.client');
 	})->name('client.app');
@@ -43,7 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('update.vehicle');
 });
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'admin'], function () {
 	Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'App\Http\Controllers\ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'App\Http\Controllers\ProfileController@update']);
