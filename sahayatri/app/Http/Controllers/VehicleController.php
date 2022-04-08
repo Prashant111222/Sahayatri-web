@@ -92,6 +92,7 @@ class VehicleController extends Controller
             'vehicle_no' => ['required', 'string', 'max:12', 'min:12', Rule::unique('vehicles')->ignore($request->id), 'regex:/[A-Z]{2}-[ABC]{1}-(AB)-[0-9]{4}$/'],
         ]);
 
+        //updating the vehicle info
         Vehicle::where('id', $request->id)->update([
             'vehicle_no' => $request->vehicle_no,
             'vehicle_type_id' => $request->vehicle_type,

@@ -28,12 +28,14 @@ class ProfileController extends Controller
      */
     public function update(ProfileRequest $request)
     {
+        //validating the user input
         $request -> validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-z ]+$/i'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore(auth()->user()->id)],
             'phone_no' => ['required', 'string', 'max:15', Rule::unique('users')->ignore(auth()->user()->id), 'regex:/((\+)?977)?(98)[0-9]{8}$/'],
         ]);
 
+        //updating the user detils (Admin)
         auth()->user()->update($request->all());
 
         return back()->withStatus(__('Profile successfully updated.'));
@@ -47,6 +49,7 @@ class ProfileController extends Controller
      */
     public function password(PasswordRequest $request)
     {
+        //hasing the password before storing
         auth()->user()->update(['password' => Hash::make($request->get('password'))]);
 
         return back()->withStatusPassword(__('Password successfully updated.'));

@@ -18,6 +18,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
+//veryfing the incoming request to be connected with the private channels
 Broadcast::channel('client.{userId}', function ($user, $userId) {
     return $user->id === User::find($userId)->id;
 });

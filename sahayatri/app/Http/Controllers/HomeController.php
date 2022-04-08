@@ -49,7 +49,7 @@ class HomeController extends Controller
         $drivers = DB::table('rides')
         ->select('users.name',
             DB::raw('sum(rides.total_fare) as total_fare'),
-            DB::raw('sum(locations.total_distance) as total_distance'),
+            DB::raw('sum(locations.total_distance) as total_distance'), //using the aggegate function
             DB::raw('count(*) as ride_count, drivers.id'))
         ->join('locations', 'rides.id', 'locations.ride_id')
         ->join('drivers', 'drivers.id', 'rides.driver_id')
@@ -75,6 +75,7 @@ class HomeController extends Controller
         ->limit(5)
         ->get();
 
+        //data to be returned
         $details = [
             'drivers' => $drivers, 
             'clients' => $clients, 
@@ -82,7 +83,7 @@ class HomeController extends Controller
             'weeklyDistance' => $weeklyDistance,
             'weeklyUsers' => $weeklyUsers 
         ];
-        
+
         return view('dashboard', $details);
     }
 

@@ -25,7 +25,7 @@ class DriverController extends Controller
      */
     public function index()
     {
-        //
+        //returning the specific driver with their ratings
         $drivers = User::where('type', 'driver')
         ->withAvg('rating', 'rating')
         ->with('driver')
@@ -41,7 +41,7 @@ class DriverController extends Controller
      */
     public function detail($id)
     {
-        //
+        //getting specific driver with their vehicle info
         $drivers = User::where('id', $id )
         ->with('driver.vehicle.vehicle_type')
         ->first();
@@ -67,6 +67,7 @@ class DriverController extends Controller
      */
     public function store(Request $request)
     {
+        //validating the input
         $request -> validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-z ]+$/i'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -75,11 +76,12 @@ class DriverController extends Controller
             'license' => ['required', 'image', 'mimes:jpg,png,jpeg', 'max:2048'],
         ]);
 
+        //getting the uploaded image file in the field
         $licenseImage = $request->file('license');
-        $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension();
+        $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension(); //renaming the image file
         $license = $licenseImage->storeAs(
             'public/licenses', $imageName
-        );
+        ); //storing the image file locally in public folder and storing address in the database
     
         //filling user information
         $user = new User;
@@ -147,10 +149,10 @@ class DriverController extends Controller
      */
     public function update(Request $request)
     {
-        //
+        //validating user input
         $request -> validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-z ]+$/i'],
-            'email' => ['required', 'string', 'email', 'max:255',  Rule::unique('users')->ignore($request->user_id)],
+            'email' => ['required', 'string', 'email', 'max:255',  Rule::unique('users')->ignore($request->user_id)], //for checking unique email except inserted one
             'phone_no' => ['required', 'string', 'max:15', Rule::unique('users')->ignore($request->user_id), 'regex:/((\+)?977)?(98)[0-9]{8}$/'],
             'license_no' => ['required', 'string', 'max:14', 'min:14', Rule::unique('drivers')->ignore($request->driver_id), 'regex:/[0-9]{2}-[0-9]{2}-[0-9]{8}$/'],
             'license' => ['image', 'mimes:jpg,png,jpeg', 'max:2048'],
@@ -159,22 +161,25 @@ class DriverController extends Controller
         //storing the license photo if uploaded by the client
         if($request->license != null){
             $licenseImage = $request->file('license');
-            $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension();
+            $imageName = $request['license_no'].'.'.$licenseImage->getClientOriginalExtension(); //renaming the image file name
             $license = $licenseImage->storeAs(
-                'public/licenses', $imageName
+                'public/licenses', $imageName //storing image file inside the public folder
             );
 
+            //updating the location of new image
             Driver::where('id', $request -> driver_id)->update([
                 'license' => $imageName,
             ]);
         }
 
+        //updating other respective information
         User::where('id', $request->user_id)->update([
             'name' => $request->name,
             'email' => $request->email,
             'phone_no' => $request->phone_no,
         ]);
 
+        //updating the license number
         Driver::where('id', $request -> driver_id)->update([
             'license_no' => $request->license_no,
         ]);
@@ -191,7 +196,7 @@ class DriverController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //deleting the specific driver
         User::where('id', $id)->delete();
         return back()->withStatus(__('Driver Successfully Deleted.'));
     }

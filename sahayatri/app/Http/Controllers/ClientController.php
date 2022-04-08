@@ -15,10 +15,11 @@ class ClientController extends Controller
      */
     public function index()
     {
+        //getting client information with rating
         $clients = User::where('type', 'client')
         ->withAvg('rating', 'rating')
         ->get();
-        // return $clients;
+
         return view('clients.index', ['data' => $clients]);
     }
 
@@ -85,7 +86,7 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //deleting the specific client
         User::where('id', $id)->delete();
         return back()->withStatus(__('Client Successfully Deleted.'));
     }
