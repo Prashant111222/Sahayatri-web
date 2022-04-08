@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\Payment;
 use App\Models\Location;
 use App\Models\Client;
 use App\Models\Driver;
@@ -22,11 +21,6 @@ class Ride extends Model
         'total_fare',
         'status',
     ];
-
-    public function payment()
-    {
-        return $this->hasOne(Payment::class);
-    }
 
     public function location()
     {
