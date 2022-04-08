@@ -82,6 +82,7 @@ class HomeController extends Controller
             'weeklyDistance' => $weeklyDistance,
             'weeklyUsers' => $weeklyUsers 
         ];
+        
         return view('dashboard', $details);
     }
 

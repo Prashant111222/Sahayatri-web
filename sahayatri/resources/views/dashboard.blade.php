@@ -102,8 +102,7 @@
                         <div class="card-body">
                             <h4 class="card-title">Daily Revenue</h4>
                             <p class="card-category">
-                                <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in
-                                rides.
+                                Inrease or Decrease in the weekly income.
                             </p>
                         </div>
                         <div class="card-footer">
@@ -267,9 +266,124 @@
 
 @push('js')
     <script>
+        //initializing data from JSON to be used inside the charts
+        var weeklyIncome = @json($weeklyIncome);
+        var weeklyDistance = @json($weeklyDistance);
+        var weeklyUsers = @json($weeklyUsers);
+
         $(document).ready(function() {
             // Javascript method's body
             md.initDashboardPageCharts();
         });
+
+        //delaying few seconds before displaying the chart for animation
+        setTimeout(function() {
+            initDashboardPageCharts();
+        }, 500);
+
+        //function for displaying overall chart
+        function initDashboardPageCharts() {
+
+            if ($('#clientSubscriptionsChart').length != 0 || $('#distanceCoveredChart').length != 0 || $(
+                    '#dailyRevenueChart').length != 0) {
+                /* ----------==========    Client Subscriptions Chart initialization    ==========---------- */
+
+                dataclientSubscriptionsChart = {
+                    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    series: [
+                        weeklyUsers
+                    ]
+                };
+
+                optionsclientSubscriptionsChart = {
+                    lineSmooth: Chartist.Interpolation.cardinal({
+                        tension: 0
+                    }),
+                    low: 0,
+                    high: 10,
+                    chartPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                }
+
+                var clientSubscriptionsChart = new Chartist.Line('#clientSubscriptionsChart',
+                    dataclientSubscriptionsChart, optionsclientSubscriptionsChart);
+
+                md.startAnimationForLineChart(clientSubscriptionsChart);
+
+
+
+                /* ----------==========     Distance Covered chart initialization    ==========---------- */
+
+                datadistanceCoveredChart = {
+                    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    series: [
+                        weeklyDistance
+                    ]
+                };
+
+                optionsdistanceCoveredChart = {
+                    lineSmooth: Chartist.Interpolation.cardinal({
+                        tension: 0
+                    }),
+                    low: 0,
+                    high: 300, //for differentiating the views of chart data
+                    chartPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    }
+                }
+
+                var distanceCoveredChart = new Chartist.Line('#distanceCoveredChart', datadistanceCoveredChart,
+                    optionsdistanceCoveredChart);
+
+                // start animation for the Completed Tasks Chart - Line Chart
+                md.startAnimationForLineChart(distanceCoveredChart);
+
+
+                /* ----------==========     Daily Revenue initialization    ==========---------- */
+
+                var datadailyRevenueChart = {
+                    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    series: [
+                        weeklyIncome
+
+                    ]
+                };
+                var optionsdailyRevenueChart = {
+                    axisX: {
+                        showGrid: false
+                    },
+                    low: 0,
+                    high: 10000,
+                    chartPadding: {
+                        top: 0,
+                        right: 5,
+                        bottom: 0,
+                        left: 0
+                    }
+                };
+                var responsiveOptions = [
+                    ['screen and (max-width: 640px)', {
+                        seriesBarDistance: 5,
+                        axisX: {
+                            labelInterpolationFnc: function(value) {
+                                return value[0];
+                            }
+                        }
+                    }]
+                ];
+                var dailyRevenueChart = Chartist.Bar('#dailyRevenueChart', datadailyRevenueChart,
+                    optionsdailyRevenueChart, responsiveOptions);
+
+                //start animation for the daily revenue Chart
+                md.startAnimationForBarChart(dailyRevenueChart);
+            }
+        };
     </script>
 @endpush

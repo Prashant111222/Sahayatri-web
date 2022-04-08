@@ -126,9 +126,7 @@ $(window).resize(function () {
   // reset the seq for charts drawing animations
   seq = seq2 = 0;
 
-  setTimeout(function () {
-    md.initDashboardPageCharts();
-  }, 500);
+  
 });
 
 md = {
@@ -258,105 +256,6 @@ md = {
     }
   },
 
-  initDashboardPageCharts: function () {
-
-    if ($('#clientSubscriptionsChart').length != 0 || $('#distanceCoveredChart').length != 0 || $('#dailyRevenueChart').length != 0) {
-      /* ----------==========    Client Subscriptions Chart initialization    ==========---------- */
-
-      dataclientSubscriptionsChart = {
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        series: [
-          [10, 20, 50, 5, 15, 10, 30]
-        ]
-      };
-
-      optionsclientSubscriptionsChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 50,
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        },
-      }
-
-      var clientSubscriptionsChart = new Chartist.Line('#clientSubscriptionsChart', dataclientSubscriptionsChart, optionsclientSubscriptionsChart);
-
-      md.startAnimationForLineChart(clientSubscriptionsChart);
-
-
-
-      /* ----------==========     Distance Covered chart initialization    ==========---------- */
-
-      datadistanceCoveredChart = {
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        series: [
-          [230, 750, 450, 300, 280, 240, 200]
-        ]
-      };
-
-      optionsdistanceCoveredChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        }
-      }
-
-      var distanceCoveredChart = new Chartist.Line('#distanceCoveredChart', datadistanceCoveredChart, optionsdistanceCoveredChart);
-
-      // start animation for the Completed Tasks Chart - Line Chart
-      md.startAnimationForLineChart(distanceCoveredChart);
-
-
-      /* ----------==========     Daily Revenue initialization    ==========---------- */
-
-      var datadailyRevenueChart = {
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        series: [
-          [542, 443, 320, 780, 553, 453, 326]
-
-        ]
-      };
-      var optionsdailyRevenueChart = {
-        axisX: {
-          showGrid: false
-        },
-        low: 0,
-        high: 1000,
-        chartPadding: {
-          top: 0,
-          right: 5,
-          bottom: 0,
-          left: 0
-        }
-      };
-      var responsiveOptions = [
-        ['screen and (max-width: 640px)', {
-          seriesBarDistance: 5,
-          axisX: {
-            labelInterpolationFnc: function (value) {
-              return value[0];
-            }
-          }
-        }]
-      ];
-      var dailyRevenueChart = Chartist.Bar('#dailyRevenueChart', datadailyRevenueChart, optionsdailyRevenueChart, responsiveOptions);
-
-      //start animation for the Emails Subscription Chart
-      md.startAnimationForBarChart(dailyRevenueChart);
-    }
-  },
 
   initMinimizeSidebar: function () {
 
