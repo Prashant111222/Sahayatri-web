@@ -67,7 +67,7 @@ class User extends Authenticatable
         return $this->hasMany(Rating::class);
     }
 
-    //returning the average rating from rating volum of the rating model
+    //returning the average rating from rating column of the rating model
     function getAvgRatingAttribute(){
         return round($this->rating()->avg('rating', 'rating'), 1);
     }

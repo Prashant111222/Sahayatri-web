@@ -9,6 +9,7 @@ use App\Models\Ride;
 use App\Models\Location;
 use App\Events\RideRequest;
 use App\Events\CancelRequest;
+use App\Events\ConfirmPayment;
 use App\Events\CancelTrip;
 use App\Events\ConfirmRequest;
 use App\Events\NotifyClient;
@@ -36,13 +37,13 @@ Route::post('/register', function (Request $request) {
     ]);
 
     //storing user details
-    $user = new User;
-    $user->name = $request['name'];
-    $user->email = $request['email'];
-    $user->phone_no = $request['phone_no'];
-    $user->password = Hash::make($request['password']);
-    $user->type = 'client';
-    $user->save();
+    return User::create([
+        'name' => $request['name'],
+        'email' => $request['email'],
+        'phone_no' => $request['phone_no'],
+        'password' => Hash::make($request['password']),
+        'type' => 'client',
+    ]);
 
     //storing specific client details
     $client = new Client;
@@ -165,7 +166,7 @@ Route::middleware('auth:sanctum')->post('/driver/response', function (Request $r
     //accessing user name from the id
     $name = User::select('name')->where('id', $request->driver_id)->first();
     //storing name and id in the compact array
-    $details = ['name' => $name, 'id' => $request->client_id];
+    $details = ['name' => $name, 'id' => $request->client_id, 'ride' => $request->ride_id];
 
     if($request->response == 'accepted'){
         //updating the status
@@ -217,6 +218,8 @@ Route::middleware('auth:sanctum')->get('/pending/requests', function (Request $r
     ->where('status', 'pending')
     ->with('client.user')
     ->with('location')
+    ->with('payment')
+    ->orderBy('scheduled_date')
     ->get();
 
     return $ride;
@@ -232,6 +235,8 @@ Route::middleware('auth:sanctum')->get('/upcoming/trips', function (Request $req
     ->where('status', 'pending')
     ->with('driver.user')
     ->with('location')
+    ->with('payment')
+    ->orderBy('scheduled_date')
     ->get();
 
     return $trips;
@@ -246,6 +251,7 @@ Route::middleware('auth:sanctum')->get('/client/history', function (Request $req
     $trips = Ride::where('client_id', $client_id)
     ->where('status', 'completed')
     ->with('location')
+    ->orderByDesc('updated_at')
     ->get();
 
     return $trips;
@@ -260,6 +266,7 @@ Route::middleware('auth:sanctum')->get('/driver/history', function (Request $req
     $trips = Ride::where('driver_id', $driver_id)
     ->where('status', 'completed')
     ->with('location')
+    ->orderByDesc('updated_at')
     ->get();
 
     return $trips;
@@ -278,5 +285,57 @@ Route::post('/forgot/password', function (Request $request) {
     //sending password reset link to user email
     Password::sendResetLink($request->only(['email']));
 
+    return 'success';
+});
+
+//For online payment
+Route::middleware('auth:sanctum')->post('/online/payment', function (Request $request) {
+    
+    //getting client id
+    $client_id = Client::where('user_id', $request->user()->id)->first()['id'];
+
+    //creating online payment
+    $payment = new Payment;
+    $payment->client_id = $client_id;
+    $payment->ride_id = $request->ride_id;
+    $payment->payment_method = 'online';
+    $payment->amount = $request->amount;
+    $payment->save();
+
+    //getting user id for driver
+    $id = DB::table('users')
+    ->select('users.id')
+    ->join('drivers', 'drivers.user_id', 'users.id')
+    ->join('rides', 'rides.driver_id', 'drivers.id')
+    ->where('rides.id', $request->ride_id)
+    ->first();
+
+    //getting client name
+    $name = DB::table('users')
+    ->select('users.name')
+    ->join('clients', 'clients.user_id', 'users.id')
+    ->join('rides', 'rides.client_id', 'clients.id')
+    ->where('rides.id', $request->ride_id)
+    ->first();
+
+    //broadcasting to the driver
+    broadcast(new ConfirmPayment(compact('id', 'name')));
+
+    return 'success';
+});
+
+//For cash payment
+Route::middleware('auth:sanctum')->post('/cash/payment', function (Request $request) {
+
+    //getting client id
+    $client_id = Client::where('user_id', $request->user()->id)->first()['id'];
+
+    //creating cash payment
+    $payment = new Payment;
+    $payment->client_id = $client_id;
+    $payment->ride_id = $request->ride_id;
+    $payment->payment_method = 'cash';
+    $payment->amount = $request->amount;
+    $payment->save();
     return 'success';
 });

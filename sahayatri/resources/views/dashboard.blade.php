@@ -31,7 +31,7 @@
                             </div>
                             <p class="card-category">Revenue for Rides</p>
                             <h3 class="card-title">
-                                Rs.{{ round(DB::table('rides')->where('status', 'completed')->sum('total_fare') * 0.25,2) }}
+                                Rs.{{ round(DB::table('rides')->where('status', 'completed')->sum('total_fare'), 0) }}
                             </h3>
                         </div>
                         <div class="card-footer">
@@ -300,7 +300,7 @@
                         tension: 0
                     }),
                     low: 0,
-                    high: 10,
+                    high: 8,
                     chartPadding: {
                         top: 0,
                         right: 0,

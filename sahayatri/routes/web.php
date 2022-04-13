@@ -67,6 +67,3 @@ Route::group(['middleware' => 'admin'], function () {
 
 	Route::get('rides/index', ['as' => 'rides.index', 'uses' => 'App\Http\Controllers\RideController@index']);
 });
-
-
-
