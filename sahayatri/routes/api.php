@@ -37,7 +37,7 @@ Route::post('/register', function (Request $request) {
     ]);
 
     //storing user details
-    return User::create([
+    $user = User::create([
         'name' => $request['name'],
         'email' => $request['email'],
         'phone_no' => $request['phone_no'],
