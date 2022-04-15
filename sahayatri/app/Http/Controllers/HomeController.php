@@ -55,7 +55,7 @@ class HomeController extends Controller
         ->join('drivers', 'drivers.id', 'rides.driver_id')
         ->join('users', 'users.id', 'drivers.user_id')
         ->where('rides.status', 'completed')
-        ->groupBy('users.name', 'rides.total_fare', 'locations.total_distance', 'drivers.id')
+        ->groupBy('users.name', 'drivers.id')
         ->orderByDesc('total_fare')
         ->limit(5)
         ->get();
@@ -70,7 +70,7 @@ class HomeController extends Controller
         ->join('clients', 'clients.id', 'rides.client_id')
         ->join('users', 'users.id', 'clients.user_id')
         ->where('rides.status', 'completed')
-        ->groupBy('users.name', 'rides.total_fare', 'locations.total_distance', 'clients.id')
+        ->groupBy('users.name', 'clients.id')
         ->orderByDesc('total_fare')
         ->limit(5)
         ->get();
