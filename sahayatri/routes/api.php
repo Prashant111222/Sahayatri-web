@@ -168,13 +168,16 @@ Route::middleware('auth:sanctum')->post('/driver/response', function (Request $r
     //storing name and id in the compact array
     $details = ['name' => $name, 'id' => $request->client_id, 'ride' => $request->ride_id];
 
+    //for checking if ride has already been accepted
+    $rideStatus = Ride::where('id', $request->ride_id)->first();
+    
     if($request->response == 'accepted'){
         //updating the status
         Ride::where('id', $request->ride_id)->update(['status' => 'pending']);
         //broadcasting to the client
         broadcast(new ConfirmRequest($details));
     }
-    else if($request->response == 'rejected') {
+    else if($request->response == 'rejected' && $rideStatus['status'] != 'pending') {
         //deleting the details
         Ride::where('id', $request->ride_id)->delete();
         //broadcasting to the client
