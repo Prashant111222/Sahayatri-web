@@ -329,7 +329,7 @@ Route::middleware('auth:sanctum')->post('/online/payment', function (Request $re
 
 //For cash payment
 Route::middleware('auth:sanctum')->post('/cash/payment', function (Request $request) {
-
+    
     //getting client id
     $client_id = Client::where('user_id', $request->user()->id)->first()['id'];
 
