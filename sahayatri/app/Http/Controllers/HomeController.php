@@ -92,7 +92,7 @@ class HomeController extends Controller
         return  DB::table('rides')
         ->select(DB::raw('sum(total_fare) as total_fare'),
         DB::raw('DATE(updated_at) as date'))
-        ->whereDay('updated_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 14))
+        ->whereDay('updated_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 17))
         ->where('status', 'completed')
         ->groupBy('date')
         ->first();
@@ -104,7 +104,7 @@ class HomeController extends Controller
         ->select(DB::raw('sum(locations.total_distance) as total_distance'), 
         DB::raw('DATE(rides.updated_at) as date'))
         ->join('locations', 'locations.ride_id', 'rides.id')
-        ->whereDay('rides.updated_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 14))
+        ->whereDay('rides.updated_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 30))
         ->where('rides.status', 'completed')
         ->groupBy('date')
         ->first();
@@ -115,7 +115,7 @@ class HomeController extends Controller
         return  DB::table('users')
         ->select(DB::raw('count(*) as total_users'), 
         DB::raw('DATE(created_at) as date'))
-        ->whereDay('created_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 14))
+        ->whereDay('created_at', Carbon::now()->subWeek()->startOfWeek(Carbon::SUNDAY)->addWeekDays($day - 30))
         ->where('type', 'client')
         ->groupBy('date')
         ->first();
